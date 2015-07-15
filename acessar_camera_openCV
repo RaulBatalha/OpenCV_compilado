@@ -1,0 +1,39 @@
+#include "stdio.h"
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
+
+int main( int argc, char **argv )
+{
+    CvCapture *capture = 0;
+    IplImage  *frame = 0;
+    int       key = 0;
+
+    // inicializar camera
+    capture = cvCaptureFromCAM( 0 );
+
+   // Verificador
+    if ( !capture ) {
+        fprintf( stderr, "Cannot open initialize webcam!\n" );
+        return 1;
+    }
+    while(true)
+    {
+        // Obter o quadro
+        frame = cvQueryFrame( capture );
+
+        // verificador
+        if(!frame ) break;
+
+        // Exibir
+        cvShowImage( "Resultado", frame );
+
+        // Usar'Esc' para sair */
+        key = cvWaitKey( 20 );
+        if((char)key==27 )
+            break;
+    }
+    //Limpar Memória
+    cvReleaseCapture( &capture );
+    cvDestroyWindow( "Resultado" );
+    return 0;
+}
