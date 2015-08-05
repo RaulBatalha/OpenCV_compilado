@@ -1,0 +1,23 @@
+alpr -c eu -j http://admin:admin@192.168.0.102/axis.cgi/mjpg/video.cgi > json.txt
+
+
+********** criar amostra positivas.vec apartir de amostras negativas e positivas gerado usando opencv_createsamples **********************
+
+opencv_createsamples -vec positivo.vec -info positivo.txt -bg negativo.txt -w 54 -h 63 -num 200
+
+
+********** Treinar para gerar arquivo .xml *************************
+
+opencv_haartraining -data samples -vec positivo.vec -bg negative.txt -npos 99 -nneg 20 -nstages 5 -mem 128 -minhitrate 0.999 -maxfalsealarm 0.5 -nonsym -mode ALL
+
+
+********** Treinar para gerar arquivo .xml *************************
+
+opencv_haartraining -data teste.xml -vec positivo.vec -bg negativo.txt -npos 200 -nneg 2027 -nstages 15 -w 20 -h 37 -mem 1000 -mode ALL >result_train.txt
+
+
+
+********** Treinar para gerar arquivo .xml *************************
+
+
+opencv_haartraining -data br -vec positivo.vec -bg negativo.txt -nPos 200 -nNeg 2027 -nStages 20  -featureType HOG -minHitRate 0.999 -maxFalseAlarmRate 0.5 -w 20 -h 37 -sym -mem 8128 mode ALL>resultado.log
