@@ -1,0 +1,82 @@
+//#include "stdafx.h"
+#include <stdfix.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+
+
+
+using namespace std;
+
+
+int main(int argc, char ** argv)
+{
+  IplImage* img =  cvLoadImage("carro2.jpg"); // chama a imagem
+    cvNamedWindow("Imagem Original"); // nome da janela
+        cvShowImage("Imagem Original",img); // mostra a imagem original
+
+// região de interesse
+ cvSetImageROI ( img , cvRect ( 220 , 290 , 150 , 250 ) ) ;
+
+ IplImage *img2 = cvCreateImage ( cvGetSize ( img ) , img->depth ,  img->nChannels ) ;
+ cvCopy ( img , NULL ) ;
+
+  cvSmooth(img2, img2, CV_GAUSSIAN,3,3); //smooth removendo ruído da imagem original ultilizando gaussiano
+
+ //converter a imagem original para tons de cinza
+ IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1); // 8= profundidade; 1=canal
+    cvCvtColor(img,imgGrayScale,CV_BGR2GRAY);
+       //cvNamedWindow("Imagem Cinza"); // nome da janela
+        //cvShowImage("Imagem Cinza",imgGrayScale); // monstrar a imagem cinza
+
+ cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV); //transformar a imagem cinza em limiarizada para obter melhores resultados
+        cvNamedWindow("Imagem Limiarizada"); // nome da janela
+        cvShowImage("Imagem Limiarizada",imgGrayScale); // mostrar a imagem limiarizada
+
+
+
+
+//******* desenhar contornos ******* //
+/*
+  CvSeq* contour;  // manter o ponteiro para contorno
+    CvSeq* result;   // seguência de  ponteiros para contorno
+        CvMemStorage *storage = cvCreateMemStorage(0); //área de amarzenamento para os contornos
+            cvFindContours(imgGrayScale, storage, &contour, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0)); // encontrar todos os contornos da imagem
+
+ while(contour) // interação de cada contorno no loop
+ {
+  // obter uma sequência de contorno dos pontos, apontado para variável contorno
+  result = cvApproxPoly(contour, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contour)*0.02, 0);
+
+  // Se existem três vértices do contorno e a área do triângulo esse valor é superior a 100 pixels
+  if(result->total==4 && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+  {
+  //interação de ponteiros em um for
+   CvPoint *pt[4];
+        for(int i=0;i<4;i++){
+            pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+  }
+
+  //desenhar linhas através do triagulo
+   cvLine(img, *pt[0], *pt[1], cvScalar(255,0,0),4);
+   cvLine(img, *pt[1], *pt[2], cvScalar(255,0,0),4);
+   //cvLine(img, *pt[2], *pt[0], cvScalar(255,0,0),4);
+   //cvLine(img, *pt[3], *pt[0], cvScalar(255,0,0),4);
+
+  }
+  contour = contour->h_next; //obter os contornos
+  }
+*/
+ //mostrar a imagem em que são identificadas as formas marcadas
+ //cvNamedWindow("Identificadas");
+ //cvShowImage("Identificadas",img);
+
+ cvWaitKey(0); //esperar uma ação
+
+ // limpar memória
+ cvDestroyAllWindows(); // limpar as janelas
+// cvReleaseMemStorage(&storage); // limpar os armazenamentos
+ cvReleaseImage(&img);
+ cvReleaseImage(&imgGrayScale);
+
+  return 0;
+}
